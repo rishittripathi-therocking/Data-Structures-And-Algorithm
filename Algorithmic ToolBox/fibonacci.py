@@ -5,7 +5,7 @@ def calc_fib(n):
         
     else:
         l=[0 for i in range(0,n)]
-        l[0]=1
+        l[0]=0
         l[1]=1
         if n==2:
             return l[0]+l[1]
