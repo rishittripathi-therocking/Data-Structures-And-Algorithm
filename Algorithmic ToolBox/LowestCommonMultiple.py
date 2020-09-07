@@ -1,16 +1,15 @@
-def lcm(x,y):
-    greater=0
-    if x>y:
-        greater=x
+def gcd(a,b):
+    if a==0:
+        return b
     else:
-        greater=y
-    lc=0
-    while(True):
-        if(greater%x==0) and (greater%y==0):
-            lc=greater
-            break
-        else:
-            greater+=1
-    return lc
+        return gcd(b%a,a)
+def lcm(a,b):
+    gc=0
+    if a<b:
+        gc=gcd(a,b)
+    else:
+        gc=gcd(b,a)
+    return (a*b)//gc
+
 num1,num2=map(int,input().split())
 print(lcm(num1,num2))
