@@ -5,14 +5,14 @@ def calc_fib(n):
         
     else:
         l=[0 for i in range(0,n)]
-        l[0]=0
+        l[0]=1
         l[1]=1
         if n==2:
-            return l[0]+l[1]
+            return 1
         else:
             for i in range(2,n):
                 l[i]=l[i-1]+l[i-2]
-            return l[n-1]
+            return (l[n-1])
             
 
 n = int(input())
