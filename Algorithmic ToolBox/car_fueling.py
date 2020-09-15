@@ -21,5 +21,8 @@ def compute_min_refills(distance, tank,size, stops):
 
 
 
-d, m, stopsi, *stops = map(int, input().split())
+d=int(input())
+m=int(input())
+stopsi=int(input())
+stops = list(map(int, input().split()))
 print(compute_min_refills(d, m,stopsi, stops))
