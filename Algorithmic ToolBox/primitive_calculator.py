@@ -1,3 +1,4 @@
+import sys
 def optimal_sequence(n):
     sequence = [0]*(n+1)
     path = [0]*(n+1)
