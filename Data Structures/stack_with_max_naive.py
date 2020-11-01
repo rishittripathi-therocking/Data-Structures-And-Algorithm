@@ -1,31 +1,26 @@
-#python3
 import sys
 
 class StackWithMax():
     def __init__(self):
         self.__stack = []
-        self.max=999999999999
+        self.max_stack = []
 
     def Push(self, a):
-        if top == -1:
-            self.max=a
-            self.__stack.append(a)
+        if len(self.max_stack) > 0:
+            if a > self.max_stack[-1]:
+                self.max_stack.append(a)
+            else:
+                self.max_stack.append(self.max_stack[-1])
         else:
-            self.__stack.append(a)
-            self.max<a:
-                self.max=a
-            
-
+            self.max_stack.append(a)
+        self.__stack.append(a)
 
     def Pop(self):
-        assert(len(self.__stack))
-
-        if self.__stack.pop()==self.max:
-            self.max=self.__stack.peek()
+        self.max_stack.pop()
+        self.__stack.pop()
 
     def Max(self):
-        assert(len(self.__stack))
-        return self.max
+        return self.max_stack[-1]
 
 
 if __name__ == '__main__':
