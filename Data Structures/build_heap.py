@@ -1,47 +1,45 @@
+  
 # python3
-import heapq
-class Worker:
-    def __init__(self, thread_id, release_time=0):
-        self.thread_id = thread_id
-        self.release_time = release_time
 
-    def __lt__(self, other):
-        if self.release_time == other.release_time:
-            return self.thread_id < other.thread_id
-        return self.release_time < other.release_time
 
-    def __gt__(self, other):
-        if self.release_time == other.release_time:
-            return self.thread_id > other.thread_id
-        return self.release_time > other.release_time
+class MinHeap:
+    def __init__(self, array):
+        self.A = array
+        self.size = len(self.A)
+        self.swaps = []
 
-class JobQueue:
-	def read_data(self):
-		self.num_workers, m = map(int, input().split())
-		self.jobs = list(map(int, input().split()))
-		assert m == len(self.jobs)
 
-	def write_response(self):
-		for i in range(len(self.jobs)):
-			print(self.assigned_workers[i], self.start_times[i]) 
+    def SiftDown(self, i):
+        min_index = i
+        left = 2 * i + 1  # left child
+        right = 2 * i + 2  # right child
+        if left < self.size and self.A[left] < self.A[min_index]:
+            min_index = left
+        if right < self.size and self.A[right] < self.A[min_index]:
+            min_index = right
+        if min_index != i:
+            self.swaps.append((i, min_index))
+            self.A[i], self.A[min_index] = self.A[min_index], self.A[i]
+            self.SiftDown(min_index)
 
-	def assign_jobs(self):
-		# TODO: replace this code with a faster algorithm.		
-		self.assigned_workers = [None] * len(self.jobs)
-		self.start_times = [None] * len(self.jobs)
-		worker_queue = [Worker(i) for i in range(self.num_workers)]
-		for i in range(len(self.jobs)):
-			worker = heapq.heappop(worker_queue)
-			self.assigned_workers[i] = worker.thread_id
-			self.start_times[i] = worker.release_time
-			worker.release_time += self.jobs[i]
-			heapq.heappush(worker_queue, worker)
+    def BuildHeap(self):
+        n = self.size
+        for i in range(n // 2 - 1, -1, -1):
+            self.SiftDown(i)
 
-	def solve(self):
-		self.read_data()
-		self.assign_jobs()
-		self.write_response()
 
-if __name__ == '__main__':
-	job_queue = JobQueue()
-	job_queue.solve()
+def main():
+    n = int(input())
+    array = list(map(int, input().split()))
+    assert len(array) == n
+
+    heap = MinHeap(array)
+    MinHeap.BuildHeap(heap)
+    swaps = heap.swaps
+    print(len(swaps))
+    for swap in swaps:
+        print(*swap)
+
+
+if __name__ == "__main__":
+    main()
