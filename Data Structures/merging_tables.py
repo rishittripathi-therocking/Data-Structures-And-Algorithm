@@ -1,41 +1,54 @@
 # python3
 
+import sys
 
-class Database:
-    def __init__(self, row_counts):
-        self.row_counts = row_counts
-        self.max_row_count = max(row_counts)
-        n_tables = len(row_counts)
-        self.ranks = [1] * n_tables
-        self.parents = list(range(n_tables))
+n, m = map(int, sys.stdin.readline().split())
+lines = list(map(int, sys.stdin.readline().split()))
+rank = [1] * n
+parent = list(range(0, n))
+ans = max(lines)
 
-    def merge(self, src, dst):
-        src_parent = self.get_parent(src)
-        dst_parent = self.get_parent(dst)
+def getParent(table):
+	global parent
+	# find parent and compress path
+	parents_to_update = []
 
-        if src_parent == dst_parent:
-            return False
+	# Find root.
+	root = table
+	while root != parent[root]:
+		parents_to_update.append(parent[root])
+		root = parent[root]
 
-        # merge two components
-        # use union by rank heuristic
-        # update max_row_count with the new maximum table size
-        return True
+	# Compress path.
+	for i in parents_to_update:
+		parent[i] = root
 
-    def get_parent(self, table):
-        # find parent and compress path
-        return self.parents[table]
+	return root
 
+def merge(destination, source):
+	global ans
+	realDestination, realSource = getParent(destination), getParent(source)
 
-def main():
-    n_tables, n_queries = map(int, input().split())
-    counts = list(map(int, input().split()))
-    assert len(counts) == n_tables
-    db = Database(counts)
-    for i in range(n_queries):
-        dst, src = map(int, input().split())
-        db.merge(dst - 1, src - 1)
-        print(db.max_row_count)
+	if realDestination == realSource:
+		return False
 
+	# merge two components
+	if rank[realDestination] < rank[realSource]:
+		parent[realDestination] = realSource
+		lines[realSource] += lines[realDestination]
+		ans = max(ans, lines[realSource])
+	else:
+		parent[realSource] = realDestination
+		lines[realDestination] += lines[realSource]
+		ans = max(ans, lines[realDestination])
+		if rank[realDestination] == rank[realSource]:
+			rank[realDestination] += 1
+	# use union by rank heuristic 
+	# update ans with the new maximum table size
+	
+	return True
 
-if __name__ == "__main__":
-    main()
+for i in range(m):
+	destination, source = map(int, sys.stdin.readline().split())
+	merge(destination - 1, source - 1)
+	print(ans)
