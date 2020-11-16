@@ -1,50 +1,47 @@
 # python3
+import heapq
+class Worker:
+    def __init__(self, thread_id, release_time=0):
+        self.thread_id = thread_id
+        self.release_time = release_time
 
-class HeapBuilder:
-	def __init__(self):
-		self._swaps = []
-		self._data = []
+    def __lt__(self, other):
+        if self.release_time == other.release_time:
+            return self.thread_id < other.thread_id
+        return self.release_time < other.release_time
 
-	def ReadData(self):
-		n = int(input())
-		self._data = [int(s) for s in input().split()]
-		assert n == len(self._data)
+    def __gt__(self, other):
+        if self.release_time == other.release_time:
+            return self.thread_id > other.thread_id
+        return self.release_time > other.release_time
 
-	def WriteResponse(self):
-		print(len(self._swaps))
-		for swap in self._swaps:
-		  print(swap[0], swap[1])
+class JobQueue:
+	def read_data(self):
+		self.num_workers, m = map(int, input().split())
+		self.jobs = list(map(int, input().split()))
+		assert m == len(self.jobs)
 
-	def GenerateSwaps(self):
-		# The following naive implementation just sorts 
-		# the given sequence using selection sort algorithm
-		# and saves the resulting sequence of swaps.
-		# This turns the given array into a heap, 
-		# but in the worst case gives a quadratic number of swaps.
-		#
-		# TODO: replace by a more efficient implementation
-		for i in range(int((len(self._data)-2)/2), -1, -1):
-			j = i
-			while True:
-				l = 2*j+1
-				r = 2*j+2
-				if l>len(self._data)-1: break
-				if r>len(self._data)-1:
-					if self._data[j]>self._data[l]:
-						self._swaps.append([j,l])
-						self._data[j], self._data[l] = self._data[l], self._data[j]
-					break
-				if self._data[j]<=min(self._data[l],self._data[r]): break
-				k = l if self._data[l]<self._data[r] else r
-				self._swaps.append([j,k])
-				self._data[j], self._data[k] = self._data[k], self._data[j]
-				j = k
+	def write_response(self):
+		for i in range(len(self.jobs)):
+			print(self.assigned_workers[i], self.start_times[i]) 
 
-	def Solve(self):
-		self.ReadData()
-		self.GenerateSwaps()
-		self.WriteResponse()
+	def assign_jobs(self):
+		# TODO: replace this code with a faster algorithm.		
+		self.assigned_workers = [None] * len(self.jobs)
+		self.start_times = [None] * len(self.jobs)
+		worker_queue = [Worker(i) for i in range(self.num_workers)]
+		for i in range(len(self.jobs)):
+			worker = heapq.heappop(worker_queue)
+			self.assigned_workers[i] = worker.thread_id
+			self.start_times[i] = worker.release_time
+			worker.release_time += self.jobs[i]
+			heapq.heappush(worker_queue, worker)
+
+	def solve(self):
+		self.read_data()
+		self.assign_jobs()
+		self.write_response()
 
 if __name__ == '__main__':
-	heap_builder = HeapBuilder()
-	heap_builder.Solve()
+	job_queue = JobQueue()
+	job_queue.solve()
