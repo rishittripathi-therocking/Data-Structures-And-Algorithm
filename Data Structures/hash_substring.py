@@ -1,17 +1,16 @@
 # python3
 
-def read_input():
-    return (input().rstrip(), input().rstrip())
+import sys
 
-def print_occurrences(output):
-    print(' '.join(map(str, output)))
+class Solver:
+	def __init__(self, s):
+		self.s = s
+	def ask(self, a, b, l):
+		return s[a:a+l] == s[b:b+l]
 
-def get_occurrences(pattern, text):
-    return [
-        i 
-        for i in range(len(text) - len(pattern) + 1) 
-        if text[i:i + len(pattern)] == pattern
-    ]
-
-if __name__ == '__main__':
-    print_occurrences(get_occurrences(*read_input()))
+s = sys.stdin.readline()
+q = int(sys.stdin.readline())
+solver = Solver(s)
+for i in range(q):
+	a, b, l = map(int, sys.stdin.readline().split())
+	print("Yes" if solver.ask(a, b, l) else "No")
