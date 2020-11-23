@@ -1,64 +1,109 @@
 # python3
 
-class Query:
+import sys
 
-    def __init__(self, query):
-        self.type = query[0]
-        if self.type == 'check':
-            self.ind = int(query[1])
+
+class Node:
+    def __init__(self):
+        self.data = None
+        self.next_node = None
+        self.previous_node = None
+
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def insert_node(self, data):
+        new_node = Node()
+        new_node.data = data
+        if self.head:
+            self.head.previous_node = new_node
+        new_node.next_node = self.head
+        self.head = new_node
+
+    def delete_node(self, data):
+        if self.head:
+            current_node = self.head
+            while current_node.next_node:
+                if current_node == self.head:
+                    if current_node.data == data:
+                        current_node.next_node.previous_node = None
+                        self.head = current_node.next_node
+
+                else:
+                    if current_node.data == data:
+                        current_node.next_node.previous_node = current_node.previous_node
+                        current_node.previous_node.next_node = current_node.next_node
+
+                current_node = current_node.next_node
+
+            if current_node.data == data and current_node == self.head:
+                self.head = None
+
+            elif current_node.data == data:
+                current_node.previous_node.next_node = None
+
+    def find_node(self, data):
+        if self.head:
+            current_node = self.head
+            while current_node.next_node:
+                if current_node.data == data:
+                    return "yes"
+
+                current_node = current_node.next_node
+            if current_node.data == data:
+                return "yes"
+        return "no"
+
+    def check(self):
+        if self.head:
+            current_node = self.head
+            while current_node.next_node:
+                print(current_node.data, end=" ")
+                current_node = current_node.next_node
+            print(current_node.data)
         else:
-            self.s = query[1]
+            print()
 
 
-class QueryProcessor:
-    _multiplier = 263
-    _prime = 1000000007
+class HashMap:
+    """ This is a class for the HashMap data structure built on an arrays """
 
-    def __init__(self, bucket_count):
-        self.bucket_count = bucket_count
-        # store all strings in one list
-        self.elems = []
+    def __init__(self):
+        self.n = None
+        self.query = None
+        self.argument = None
+        self.PhoneBook = None
+        self.p = 1000000007
+        self.m = None
+        self.x = 263
+        self.hashkey = None
 
-    def _hash_func(self, s):
-        ans = 0
-        for c in reversed(s):
-            ans = (ans * self._multiplier + ord(c)) % self._prime
-        return ans % self.bucket_count
+    def read(self):
+        self.m = int(sys.stdin.readline())
+        self.n = int(sys.stdin.readline())
+        self.PhoneBook = []
+        for _ in range(self.m):
+            self.PhoneBook.append(LinkedList())
+        for _ in range(self.n):
+            self.query, self.argument = sys.stdin.readline().rstrip('\n').split(' ')
+            self.hashkey = 0
+            for i in range(len(self.argument)):
+                self.hashkey += (ord(self.argument[i]) * (self.x**i))%self.p
 
-    def write_search_result(self, was_found):
-        print('yes' if was_found else 'no')
+            self.hashkey = self.hashkey % self.m
 
-    def write_chain(self, chain):
-        print(' '.join(chain))
+            if self.query == "add":
+                if self.PhoneBook[self.hashkey].find_node(self.argument) == "no":
+                    self.PhoneBook[self.hashkey].insert_node(self.argument)
+            elif self.query == "del":
+                self.PhoneBook[self.hashkey].delete_node(self.argument)
+            elif self.query == "find":
+                print(self.PhoneBook[self.hashkey].find_node(self.argument))
+            elif self.query == "check":
+                self.PhoneBook[int(self.argument)].check()
 
-    def read_query(self):
-        return Query(input().split())
-
-    def process_query(self, query):
-        if query.type == "check":
-            # use reverse order, because we append strings to the end
-            self.write_chain(cur for cur in reversed(self.elems)
-                        if self._hash_func(cur) == query.ind)
-        else:
-            try:
-                ind = self.elems.index(query.s)
-            except ValueError:
-                ind = -1
-            if query.type == 'find':
-                self.write_search_result(ind != -1)
-            elif query.type == 'add':
-                if ind == -1:
-                    self.elems.append(query.s)
-            else:
-                if ind != -1:
-                    self.elems.pop(ind)
-
-    def process_queries(self):
-        n = int(input())
-        for i in range(n):
-            self.process_query(self.read_query())
-
-if __name__ == '__main__':
-    bucket_count = int(input())
-    proc = QueryProcessor(bucket_count)
-    proc.process_queries()
+if __name__ == "__main__":
+    test_list = HashMap()
+    test_list.read()
